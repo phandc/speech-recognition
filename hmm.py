@@ -6,6 +6,7 @@ from sklearn.cluster import KMeans
 import hmmlearn.hmm
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
+import pickle
 
 
 def split_word(file_path):
@@ -32,7 +33,7 @@ def get_mfcc(file_path):
         y, sr, n_mfcc=12, n_fft=1024,
         hop_length=hop_length, win_length=win_length)
     # substract mean from mfcc --> normalize mfcc
-    mfcc = mfcc - np.mean(mfcc, axis=1).reshape((-1,1)) 
+    mfcc = mfcc - np.mean(mfcc, axis=1).reshape((-1,1))
     # delta feature 1st order and 2nd order
     delta1 = librosa.feature.delta(mfcc, order=1, mode='nearest')
     delta2 = librosa.feature.delta(mfcc, order=2, mode='nearest')
@@ -46,18 +47,18 @@ def get_class_data(data_dir):
     mfcc = [get_mfcc(os.path.join(data_dir,f)) for f in files if f.endswith(".wav")]
     return mfcc
 
-def clustering(X, n_clusters=10):
+def clustering(X, n_clusters=28):
     kmeans = KMeans(n_clusters=n_clusters, n_init=50, random_state=0, verbose=0)
     kmeans.fit(X)
     print("centers", kmeans.cluster_centers_.shape)
-    return kmeans  
+    return kmeans
 
 if __name__ == "__main__":
-    class_names = ["một", "bảy","năm", "test_một", "test_bảy", "test_năm"]
+    class_names = ["thông","tin","dịch","bệnh","covid","test_thông","test_tin", "test_dịch","test_bệnh","test_covid",]
     dataset = {}
     for cname in class_names:
         print(f"Load {cname} dataset")
-        dataset[cname] = get_class_data(os.path.join("data", cname))
+        dataset[cname] = get_class_data(os.path.join("training_data", cname))
 
     # Get all vectors in the datasets
     all_vectors = np.concatenate([np.concatenate(v, axis=0) for k, v in dataset.items()], axis=0)
@@ -65,6 +66,10 @@ if __name__ == "__main__":
     # Run K-Means algorithm to get clusters
     kmeans = clustering(all_vectors)
     print("centers", kmeans.cluster_centers_.shape)
+
+    #save kmeans models
+    with open("kmeans.pkl", "wb") as f:
+        pickle.dump(kmeans, f)
 
     models = {}
     for cname in class_names:
@@ -116,10 +121,9 @@ if __name__ == "__main__":
 
 
 
-
-
-
-
+        # # save model
+        with open("model.pkl", "wb") as f:
+            pickle.dump(models, f)
 
 
 

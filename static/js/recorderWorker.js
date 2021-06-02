@@ -150,9 +150,9 @@ function encodeWAV(samples, mono){
   view.setUint16(32, 4, true);
   /* bits per sample */
   view.setUint16(34, 16, true);
-  /* data chunk identifier */
+  /* training_data chunk identifier */
   writeString(view, 36, 'data');
-  /* data chunk length */
+  /* training_data chunk length */
   view.setUint32(40, samples.length * 2, true);
 
   floatTo16BitPCM(view, 44, samples);

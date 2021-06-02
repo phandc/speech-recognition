@@ -332,7 +332,7 @@ function stopRecording() {
      time = pad(parseInt(totalSeconds / 60)) + ":" + pad(totalSeconds % 60);
 
 
-     $('#cb-right').attr('data-content', time)
+     $('#cb-right').attr('training_data-content', time)
 
 }
 
@@ -349,6 +349,9 @@ function createDownloadLink(blob) {
     var xhr = new XMLHttpRequest();
     xhr.onload=function(e) {
       if(this.readyState === 4) {
+
+
+          document.getElementById("result").innerHTML = e.target.responseText
           console.log("Server returned: ",e.target.responseText);
       }
     };
@@ -356,8 +359,10 @@ function createDownloadLink(blob) {
     fd.append("audio_data",blob, filename);
     xhr.open("POST","/",true);
     xhr.send(fd);
-
     id++;
+
+
+
 }
 
 
@@ -410,6 +415,7 @@ function quitRecording(){
    // $("#top-controls").addClass("visible")
     $("#dialog-quit").addClass("visible")
 
+
 }
 
 
@@ -425,6 +431,7 @@ $("#btn-quit-accept").click(function () {
     $('.preview').hide()
 
     $('.wait-record').show()
+    document.getElementById("result").innerHTML = ""
 });
 
 
