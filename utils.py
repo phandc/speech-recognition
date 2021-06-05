@@ -7,8 +7,7 @@ from sklearn.cluster import KMeans
 import numpy as np
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
-from pydub.silence import detect_silence
-
+from function import  get_class_data, get_mfcc, clustering
 models = {} # scores is an empty dict already
 model_target = "model/model.pkl"
 kmeans_target = "model/kmeans.pkl"
