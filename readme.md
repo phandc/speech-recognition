@@ -23,4 +23,8 @@ For GMMHMM training
    python hmm.py
 Note: Code is a bit rusty. For custom training, make sure changing data path in hmm.py file
 
+To gather word data with annotated srt:
+    python word_processing.py
+This is somewhat effective 
+
 ```
