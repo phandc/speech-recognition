@@ -10,8 +10,8 @@ from pydub.silence import split_on_silence
 from pydub.silence import detect_silence
 
 models = {} # scores is an empty dict already
-model_target = "model\model.pkl"
-kmeans_target = "model\kmeans.pkl"
+model_target = "model/model.pkl"
+kmeans_target = "model/kmeans.pkl"
 
 def split_word():
 
@@ -28,7 +28,7 @@ def split_word():
     dBFS = sound_file.dBFS
     chunks = split_on_silence(sound_file,
         # must be silent for at least half a second
-        min_silence_len=50,
+        min_silence_len=100,
 
         # consider it silent if quieter than -16 dBFS
         silence_thresh=dBFS-16,
@@ -70,41 +70,68 @@ def clustering(X, n_clusters=28):
     print("centers", kmeans.cluster_centers_.shape)
     return kmeans
 
-def predict():
 
-    split_word()
-    dataset = {}
+def predict(model_target, kmeans_target):
 
-    dataset["user_data"] = get_class_data("user_data")
+        split_word()
 
-    predict_res = []
+        dataset = {}
+        scores = []
 
-    if os.path.getsize(model_target) > 0:
-     with open(model_target, "rb") as f:
-      models = pickle.load(f)
-      print(models)
+        dataset["user_data"] = get_class_data("user_data")
 
-    if os.path.getsize(kmeans_target) > 0:
-     with open(kmeans_target, "rb") as f:
-      kmeans = pickle.load(f)
+        predict_res = []
 
-      dataset["user_data"] = list([kmeans.predict(v).reshape(-1,1) for v in dataset["user_data"]])
+        if os.path.getsize(model_target) > 0:
+            with open(model_target, "rb") as f:
+                models = pickle.load(f)
+                # print(models)
+
+        if os.path.getsize(kmeans_target) > 0:
+            with open(kmeans_target, "rb") as f:
+                kmeans = pickle.load(f)
+
+                dataset["user_data"] = list([kmeans.predict(v).reshape(-1, 1) for v in dataset["user_data"]])
+
+        for O in dataset["user_data"]:
+            score = {cname: np.exp(model.score(O, [len(O)])) for cname, model in
+                     models.items()}  # np.exp(model.score(O, [len(O)]) chuyen đôi ve khoang [0,1] vi score tra ve gia tri log cua sx
+            # print(score)
+            predict = max(score, key=score.get)
+
+            max_score = max(score.values())
+            # print(max_score)
+            scores.append(max_score);
+
+            print("predict result label is ", predict)
+
+            predict_res.append(predict)
+
+        sentence = " ".join(predict_res)
+        return (sentence, scores)
 
 
-    for O in dataset["user_data"]:
-
-        score = {cname: np.exp(model.score(O, [len(O)])) for cname, model in models.items()}  # np.exp(model.score(O, [len(O)]) chuyen đôi ve khoang [0,1] vi score tra ve gia tri log cua sx
-        print(score)
-        predict = max(score, key=score.get)
-
-        print("predict result label is ", predict)
-
-        predict_res.append(predict)
-
-    sentence = " ".join(predict_res)
-    return sentence
 
 
+def combine_predict():
 
+    s1, scores1 = predict('model/model.pkl', 'model/kmeans.pkl')
+    print(s1)
+    for s in scores1:
+        print(s, end=" ")
+    print("\n")
+    s2, scores2 = predict('model/model_s3.pkl', 'model/kmeans_s3.pkl')
+    print(s2)
+    for s in scores2:
+        print(s, end=" ")
+    print("\n")
+    count1 = 0
+    for (i, j) in zip(scores1, scores2): #to do: compare result of 2 models
+        if i > j:
+            count1 = count1 + 1
 
+    if count1 > (len(scores1) / 2): #to do: get the model has higher score to thresh hold
+        return s1
+    else:
+        return s2
 

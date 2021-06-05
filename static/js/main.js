@@ -32,12 +32,15 @@ var totalSeconds = 0;
 var id = 0;
 var process_line = 70;
 
-$('.paused').hide()
-$('.preview').hide()
+$('.paused').hide();
+$('.preview').hide();
 
-$('#btn-resume').hide()
+$('#btn-resume').hide();
 
-$('#btn-pre-pause').hide()
+$('#btn-pre-pause').hide();
+
+$('#model_result_area').hide();
+$('#btn-text-save').hide();
 
 var recordButton = document.getElementById("btn-record");
 var pauseButton = document.getElementById("btn-pause");
@@ -49,6 +52,8 @@ var prePauseButton = document.getElementById("btn-pre-pause");
 var saveButton = document.getElementById("btn-save");
 var quitButton = document.getElementById("btn-quit");
 var convertButton = document.getElementById("btn-convert")
+var textSaveButton = document.getElementById("btn-text-save");
+
 //recording
 recordButton.addEventListener("click", startRecording);
 pauseButton.addEventListener("click", pauseRecording);
@@ -332,7 +337,7 @@ function stopRecording() {
      time = pad(parseInt(totalSeconds / 60)) + ":" + pad(totalSeconds % 60);
 
 
-     $('#cb-right').attr('training_data-content', time)
+     $('#cb-right').attr('data-content', time)
 
 }
 
@@ -350,7 +355,8 @@ function createDownloadLink(blob) {
     xhr.onload=function(e) {
       if(this.readyState === 4) {
 
-
+          $('#model_result_area').show();
+          $('#btn-text-save').show();
           document.getElementById("result").innerHTML = e.target.responseText
           console.log("Server returned: ",e.target.responseText);
       }
@@ -431,7 +437,10 @@ $("#btn-quit-accept").click(function () {
     $('.preview').hide()
 
     $('.wait-record').show()
-    document.getElementById("result").innerHTML = ""
+
+     $('#model_result_area').hide();
+     $('#btn-text-save').hide();
+     document.getElementById("result").innerHTML = ""
 });
 
 
@@ -440,3 +449,13 @@ $("#btn-quit-deny").click(function () {
     $(".dialog-quit").removeClass("visible")
 });
 
+$("#btn-text-save").click(function (){
+
+    var data = document.getElementById("result").innerHTML;
+    console.log(data)
+    if(data.length > 1){
+          var blob = new Blob([data], {type: "text/plain;charset=utf-8"});
+          saveAs(blob, "speech2text" + id + ".txt");
+    }
+
+});

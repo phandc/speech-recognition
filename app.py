@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 import os, os.path
-from utils import predict
+from utils import combine_predict
 
 UPLOAD_FOLDER = 'upload'
 
@@ -25,7 +25,7 @@ def hello_world():
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         print('file uploaded successfully')
 
-        sentence = predict()
+        sentence = combine_predict()
         print("=====================>")
         print(sentence)
 

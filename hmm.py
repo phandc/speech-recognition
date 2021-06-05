@@ -47,14 +47,21 @@ def get_class_data(data_dir):
     mfcc = [get_mfcc(os.path.join(data_dir,f)) for f in files if f.endswith(".wav")]
     return mfcc
 
-def clustering(X, n_clusters=28):
+def clustering(X, n_clusters=38):
     kmeans = KMeans(n_clusters=n_clusters, n_init=50, random_state=0, verbose=0)
     kmeans.fit(X)
     print("centers", kmeans.cluster_centers_.shape)
     return kmeans
 
 if __name__ == "__main__":
-    class_names = ["thông","tin","dịch","bệnh","covid","test_thông","test_tin", "test_dịch","test_bệnh","test_covid",]
+
+
+    # "thông", "tin", "dịch", "bệnh", "covid", "mười", "test_thông", "test_tin", "test_dịch", "test_bệnh", "test_covid"
+
+    # class_names = ["thông", "tin", "dịch", "bệnh", "covid", "hôm", "nay","test_thông", "test_tin", "test_dịch", "test_bệnh", "test_covid","test_hôm", "test_nay"]
+
+    class_names = ["đội","việt","nam","tuyển","test_đội","test_tuyển","test_việt","test_nam"]
+
     dataset = {}
     for cname in class_names:
         print(f"Load {cname} dataset")
@@ -68,7 +75,7 @@ if __name__ == "__main__":
     print("centers", kmeans.cluster_centers_.shape)
 
     #save kmeans models
-    with open("kmeans.pkl", "wb") as f:
+    with open("kmeans_s3.pkl", "wb") as f:
         pickle.dump(kmeans, f)
 
     models = {}
@@ -122,7 +129,7 @@ if __name__ == "__main__":
 
 
         # # save model
-        with open("model.pkl", "wb") as f:
+        with open("model_s3.pkl", "wb") as f:
             pickle.dump(models, f)
 
 

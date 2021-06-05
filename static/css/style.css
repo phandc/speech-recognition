@@ -2,3 +2,17 @@
     padding: 0;
     margin: 0;
 }
+
+/* Style buttons */
+.btn {
+  background-color: DodgerBlue;
+  border: none;
+  color: white;
+  padding: 10px 28px;
+  font-size: 16px;
+}
+
+/* Darker background on mouse-over */
+.btn:hover {
+  background-color: RoyalBlue;
+}
