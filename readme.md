@@ -12,7 +12,7 @@ Web app's basic user case:
 -Voice recording 
 -Delete record
 -Convert record to text
--Download text 
+-Download recorded text 
 
 
 
