@@ -78,6 +78,7 @@ if __name__ == "__main__":
             print("Test on true label ", label, ": predict result label is ", predict)
 
             if predict == label:
+
                 score_count += 1
 
         print("Final recognition rate is %.2f" % (100.0 * score_count / len(dataset[true_cname])), "%")
