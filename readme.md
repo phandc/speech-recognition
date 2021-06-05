@@ -20,8 +20,9 @@ To lauch application, please command
    python app.py
 
 For GMMHMM training
-   python hmm.py
-Note: Code is a bit rusty. For custom training, make sure changing data path in hmm.py file
+   python hmm.py 
+--data_path --list (name of classes (words)) such as: viet nam hanh phuc
+
 
 To gather word data with annotated srt:
     python word_processing.py

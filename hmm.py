@@ -7,14 +7,22 @@ import hmmlearn.hmm
 import pickle
 from function import clustering, get_class_data
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--data_path", help="data path for training",
+                    type=str)
+parser.add_argument("--list", nargs="+", default=["thông","tin","dịch","bệnh","covid","test_thông","test_tin", "test_dịch","test_bệnh","test_covid"])
 
+
+opt = parser.parse_args()
 
 if __name__ == "__main__":
-    class_names = ["thông","tin","dịch","bệnh","covid","test_thông","test_tin", "test_dịch","test_bệnh","test_covid",]
+    class_names = opt.list
     dataset = {}
+    data = opt.data_path
     for cname in class_names:
         print(f"Load {cname} dataset")
-        dataset[cname] = get_class_data(os.path.join("training_data", cname))
+        dataset[cname] = get_class_data(os.path.join(data, cname))
 
     # Get all vectors in the datasets
     all_vectors = np.concatenate([np.concatenate(v, axis=0) for k, v in dataset.items()], axis=0)
@@ -31,6 +39,7 @@ if __name__ == "__main__":
     for cname in class_names:
         class_vectors = dataset[cname]
         dataset[cname] = list([kmeans.predict(v).reshape(-1,1) for v in dataset[cname]])
+
         hmm = hmmlearn.hmm.MultinomialHMM(
             n_components=6, random_state=0, n_iter=1000, verbose=True,
             startprob_prior=np.array([0.7,0.2,0.1,0.0,0.0,0.0]),

@@ -45,8 +45,11 @@ def get_mfcc(file_path):
         hop_length=hop_length, win_length=win_length)
     # substract mean from mfcc --> normalize mfcc
     mfcc = mfcc - np.mean(mfcc, axis=1).reshape((-1,1))
+
     # delta feature 1st order and 2nd order
+    #1st order: basic hmm one stage is predicted by previous states
     delta1 = librosa.feature.delta(mfcc, order=1, mode='nearest')
+    #2nd order: 1 stage is
     delta2 = librosa.feature.delta(mfcc, order=2, mode='nearest')
     # X is 36 x T
     X = np.concatenate([mfcc, delta1, delta2], axis=0) # O^r
